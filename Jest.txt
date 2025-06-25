@@ -1,0 +1,104 @@
+Aby skonfigurować Jest w wersji 29.7.0 (nie ma wersji 19.7.0 – prawdopodobnie chodziło Ci o 29.7.0, która jest najnowszą wersją Jest z serii 29), z frameworkiem Vite + React, należy zastosować się do kilku kroków. Vite nie używa Jest natywnie, więc konfiguracja wymaga dodatkowych narzędzi, takich jak vite-jest (eksperymentalne) lub bardziej stabilnie – jest + babel + @testing-library/react.
+
+⸻
+
+✅ Konfiguracja Jest 29.7.0 dla Vite + React (z Babel)
+
+1. Zainstaluj zależności:
+
+npm install --save-dev jest@29.7.0 babel-jest @babel/preset-env @babel/preset-react @testing-library/react @testing-library/jest-dom
+
+Opcjonalnie, jeśli używasz TypeScript:
+
+npm install --save-dev ts-jest @types/jest
+
+
+⸻
+
+2. Skonfiguruj babel.config.js:
+
+// babel.config.js
+module.exports = {
+  presets: [
+    '@babel/preset-env',
+    ['@babel/preset-react', { runtime: 'automatic' }],
+  ],
+};
+
+
+⸻
+
+3. Stwórz plik jest.config.js:
+
+Jeśli używasz JavaScript:
+
+// jest.config.js
+module.exports = {
+  testEnvironment: 'jsdom',
+  moduleNameMapper: {
+    '^~/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
+  },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  transform: {
+    '^.+\\.jsx?$': 'babel-jest',
+  },
+};
+
+Jeśli używasz TypeScript:
+
+// jest.config.js
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  moduleNameMapper: {
+    '^~/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
+  },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+};
+
+
+⸻
+
+4. Stwórz plik jest.setup.js lub jest.setup.ts:
+
+// jest.setup.js
+import '@testing-library/jest-dom';
+
+
+⸻
+
+5. Przykład testu:
+
+// src/components/Hello.test.jsx
+import { render, screen } from '@testing-library/react';
+import Hello from './Hello';
+
+test('renders hello message', () => {
+  render(<Hello />);
+  expect(screen.getByText(/hello/i)).toBeInTheDocument();
+});
+
+
+⸻
+
+6. Dodaj skrypt do package.json:
+
+"scripts": {
+  "test": "jest"
+}
+
+
+⸻
+
+🧪 Uruchamianie testów
+
+npm run test
+
+
+⸻
+
+Jeśli chcesz używać nowoczesnej alternatywy jak vitest, która integruje się lepiej z Vite, mogę Ci też ją rozkonfigurować. Ale jeśli chcesz trzymać się Jest 29.7.0, powyższa konfiguracja będzie stabilna.
+
+Czy używasz TypeScript czy JavaScript? Chcesz też testować komponenty z plikami CSS/SCSS?
