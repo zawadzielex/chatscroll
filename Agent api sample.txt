@@ -1,0 +1,183 @@
+// REQUEST - Agent z narzędziami do obsługi plików
+{
+“model”: “gpt-4”,
+“messages”: [
+{
+“role”: “system”,
+“content”: “Jesteś asystentem AI z dostępem do narzędzi do zarządzania plikami. Możesz tworzyć, czytać, zapisywać i usuwać pliki.”
+},
+{
+“role”: “user”,
+“content”: “Stwórz plik z listą zakupów zawierający: mleko, chleb, masło, jajka”
+}
+],
+“tools”: [
+{
+“type”: “function”,
+“function”: {
+“name”: “write_file”,
+“description”: “Zapisuje zawartość do pliku”,
+“parameters”: {
+“type”: “object”,
+“properties”: {
+“filename”: {
+“type”: “string”,
+“description”: “Nazwa pliku”
+},
+“content”: {
+“type”: “string”,
+“description”: “Zawartość do zapisania”
+}
+},
+“required”: [“filename”, “content”]
+}
+}
+},
+{
+“type”: “function”,
+“function”: {
+“name”: “read_file”,
+“description”: “Odczytuje zawartość pliku”,
+“parameters”: {
+“type”: “object”,
+“properties”: {
+“filename”: {
+“type”: “string”,
+“description”: “Nazwa pliku do odczytania”
+}
+},
+“required”: [“filename”]
+}
+}
+},
+{
+“type”: “function”,
+“function”: {
+“name”: “list_files”,
+“description”: “Wyświetla listę plików w katalogu”,
+“parameters”: {
+“type”: “object”,
+“properties”: {
+“directory”: {
+“type”: “string”,
+“description”: “Ścieżka do katalogu (domyślnie bieżący)”,
+“default”: “.”
+}
+}
+}
+}
+},
+{
+“type”: “function”,
+“function”: {
+“name”: “delete_file”,
+“description”: “Usuwa plik”,
+“parameters”: {
+“type”: “object”,
+“properties”: {
+“filename”: {
+“type”: “string”,
+“description”: “Nazwa pliku do usunięcia”
+}
+},
+“required”: [“filename”]
+}
+}
+}
+],
+“tool_choice”: “auto”,
+“temperature”: 0.7
+}
+
+// RESPONSE - Agent wywołuje narzędzie
+{
+“id”: “chatcmpl-8XYZ789DEF”,
+“object”: “chat.completion”,
+“created”: 1706789456,
+“model”: “gpt-4-0613”,
+“choices”: [
+{
+“index”: 0,
+“message”: {
+“role”: “assistant”,
+“content”: null,
+“tool_calls”: [
+{
+“id”: “call_abc123def456”,
+“type”: “function”,
+“function”: {
+“name”: “write_file”,
+“arguments”: “{"filename": "lista_zakupow.txt", "content": "Lista zakupów:\n\n1. Mleko\n2. Chleb\n3. Masło\n4. Jajka\n\nData utworzenia: $(date)"}”
+}
+}
+]
+},
+“finish_reason”: “tool_calls”
+}
+],
+“usage”: {
+“prompt_tokens”: 234,
+“completion_tokens”: 89,
+“total_tokens”: 323
+}
+}
+
+// NASTĘPNY REQUEST - z wynikiem wywołania narzędzia
+{
+“model”: “gpt-4”,
+“messages”: [
+{
+“role”: “system”,
+“content”: “Jesteś asystentem AI z dostępem do narzędzi do zarządzania plikami.”
+},
+{
+“role”: “user”,
+“content”: “Stwórz plik z listą zakupów zawierający: mleko, chleb, masło, jajka”
+},
+{
+“role”: “assistant”,
+“content”: null,
+“tool_calls”: [
+{
+“id”: “call_abc123def456”,
+“type”: “function”,
+“function”: {
+“name”: “write_file”,
+“arguments”: “{"filename": "lista_zakupow.txt", "content": "Lista zakupów:\n\n1. Mleko\n2. Chleb\n3. Masło\n4. Jajka\n\nData utworzenia: $(date)"}”
+}
+}
+]
+},
+{
+“role”: “tool”,
+“tool_call_id”: “call_abc123def456”,
+“content”: “{"success": true, "message": "Plik ‘lista_zakupow.txt’ został utworzony pomyślnie"}”
+}
+],
+“tools”: [
+// … te same narzędzia co wcześniej
+]
+}
+
+// FINALNA ODPOWIEDŹ AGENTA
+{
+“id”: “chatcmpl-8XYZ789GHI”,
+“object”: “chat.completion”,
+“created”: 1706789478,
+“model”: “gpt-4-0613”,
+“choices”: [
+{
+“index”: 0,
+“message”: {
+“role”: “assistant”,
+“content”: “✅ Świetnie! Utworzyłem plik ‘lista_zakupow.txt’ z Twoją listą zakupów. Zawiera on wszystkie produkty, które wymieniłeś:\n\n- Mleko\n- Chleb  \n- Masło\n- Jajka\n\nPlik został zapisany i jest gotowy do użycia. Czy chcesz, żebym dodał coś jeszcze do listy lub wykonał inne operacje na pliku?”
+},
+“finish_reason”: “stop”
+}
+],
+“usage”: {
+“prompt_tokens”: 298,
+“completion_tokens”: 87,
+“total_tokens”: 385
+}
+}
